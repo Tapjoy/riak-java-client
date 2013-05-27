@@ -133,6 +133,25 @@ public class PBClientAdapter implements RawClient {
     /*
      * (non-Javadoc)
      * 
+     * @see com.basho.riak.client.raw.RawClient#fetch(com.google.protobuf.ByteString,
+     * com.google.protobuf.ByteString)
+     */
+    public RiakResponse fetch(ByteString bucket, ByteString key) throws IOException {
+        if (bucket == null) {
+            throw new IllegalArgumentException(
+                                               "bucket must not be null or empty "
+                                                       + "or just whitespace.");
+        }
+
+        if (key == null) {
+            throw new IllegalArgumentException("Key cannot be null or empty or just whitespace");
+        }
+        return convert(client.fetch(bucket, key));
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see
      * com.basho.riak.client.raw.RawClient#fetch(com.basho.riak.newapi.bucket
      * .Bucket, java.lang.String, int)
@@ -298,6 +317,20 @@ public class PBClientAdapter implements RawClient {
                 return i;
             }
         };
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * com.basho.riak.client.raw.RawClient#fetchBucketKeys(java.lang.String)
+     */
+    public Iterator<ByteString> listKeysRaw(String bucketName) throws IOException {
+        if (bucketName == null || bucketName.trim().equals("")) {
+            throw new IllegalArgumentException("bucketName cannot be null, empty or all whitespace");
+        }
+
+        return client.listKeys(ByteString.copyFromUtf8(bucketName)).iterator();
     }
 
     /**
